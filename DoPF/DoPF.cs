@@ -15,14 +15,15 @@ namespace DoPF
 
     public class DoPF
     {
-        public static string DocToHTML(string fileName, Byte[] wordContent )
+        public static string DocToHTML(FileInfo fi)
         {
-            var fileInfo = wordContent;
-            string fullFilePath = fileName;
+
+            var fileInfo = fi;
+            string fullFilePath = fileInfo.Name;
             string htmlText = string.Empty;
             try
             {
-                htmlText = ParseDOCX(fileName, wordContent);
+                htmlText = ParseDOCX(fileInfo);
             }
             catch (OpenXmlPackageException e)
             {
@@ -32,7 +33,7 @@ namespace DoPF
                     {
                         UriFixer.FixInvalidUri(fs, brokenUri => FixUri(brokenUri));
                     }
-                    htmlText = ParseDOCX(fileName, wordContent);
+                    htmlText = ParseDOCX(fileInfo);
                 }
             }
             return htmlText;
@@ -41,7 +42,7 @@ namespace DoPF
             //writer.Dispose();
         }
 
-        private static Uri FixUri(string brokenUri)
+        public static Uri FixUri(string brokenUri)
         {
             string newURI = string.Empty;
             if (brokenUri.Contains("mailto:"))
@@ -57,11 +58,11 @@ namespace DoPF
             return new Uri(newURI);
         }
 
-        private static string ParseDOCX(string fileName, byte[] wordContent)
+        public static string ParseDOCX(FileInfo fileInfo)
         {
             try
             {
-                byte[] byteArray = wordContent;
+                byte[] byteArray = File.ReadAllBytes(fileInfo.FullName);
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     memoryStream.Write(byteArray, 0, byteArray.Length);
@@ -69,12 +70,12 @@ namespace DoPF
                                                 WordprocessingDocument.Open(memoryStream, true))
                     {
                         int imageCounter = 0;
-                        var pageTitle = fileName;
+                        var pageTitle = fileInfo.FullName;
                         var part = wDoc.CoreFilePropertiesPart;
                         if (part != null)
-                            pageTitle = (string?)part.GetXDocument()
+                            pageTitle = (string)part.GetXDocument()
                                                     .Descendants(DC.title)
-                                                    .FirstOrDefault() ?? fileName;
+                                                    .FirstOrDefault() ?? fileInfo.FullName;
 
                         WmlToHtmlConverterSettings settings = new WmlToHtmlConverterSettings()
                         {
@@ -88,7 +89,7 @@ namespace DoPF
                             {
                                 ++imageCounter;
                                 string extension = imageInfo.ContentType.Split('/')[1].ToLower();
-                                ImageFormat? imageFormat = null;
+                                ImageFormat imageFormat = null;
                                 if (extension == "png") imageFormat = ImageFormat.Png;
                                 else if (extension == "gif") imageFormat = ImageFormat.Gif;
                                 else if (extension == "bmp") imageFormat = ImageFormat.Bmp;
@@ -106,14 +107,14 @@ namespace DoPF
 
                                 if (imageFormat == null) return null;
 
-                                string? base64 = null;
+                                string base64 = null;
                                 try
                                 {
                                     using (MemoryStream ms = new MemoryStream())
                                     {
                                         imageInfo.Bitmap.Save(ms, imageFormat);
                                         var ba = ms.ToArray();
-                                        base64 = Convert.ToBase64String(ba);
+                                        base64 = System.Convert.ToBase64String(ba);
                                     }
                                 }
                                 catch (System.Runtime.InteropServices.ExternalException)
