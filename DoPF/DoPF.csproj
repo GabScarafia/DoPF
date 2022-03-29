@@ -4,6 +4,14 @@
     <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <PackageId>DoPF</PackageId>
+    <Version>0.1.0</Version>
+    <Authors>Gabriel Scarafia</Authors>
+    <Company>Gabriel Scarafia</Company>
+    <Product>DoPF</Product>
+    <Copyright>2022</Copyright>
+	<license type="file">license.txt</license>
+    <PackageProjectUrl>https://github.com/GabScarafia/DoPF.git</PackageProjectUrl>
   </PropertyGroup>
 
   <ItemGroup>
