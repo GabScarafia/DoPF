@@ -10,7 +10,7 @@
     <Company>Gabriel Scarafia</Company>
     <Product>DoPF</Product>
     <Copyright>2022</Copyright>
-	<license type="file">license.txt</license>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/GabScarafia/DoPF.git</PackageProjectUrl>
   </PropertyGroup>
 
