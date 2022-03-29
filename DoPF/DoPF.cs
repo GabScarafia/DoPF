@@ -5,25 +5,16 @@ using System.Xml.Linq;
 
 namespace DoPF
 {
-    //public class Files
-    //{
-    //    String Name { get; set; }
-    //    String Path { get; set; }
-    //    Byte[] Data { get; set; }
-    //    Int32 Size { get; set; }
-    //}
-
     public class DoPF
     {
-        public static string DocToHTML(FileInfo fi)
+        public static string DocToHTML(string fileName, Byte[] wordContent)
         {
-
-            var fileInfo = fi;
-            string fullFilePath = fileInfo.Name;
+            var fileInfo = wordContent;
+            string fullFilePath = fileName;
             string htmlText = string.Empty;
             try
             {
-                htmlText = ParseDOCX(fileInfo);
+                htmlText = ParseDOCX(fileName, wordContent);
             }
             catch (OpenXmlPackageException e)
             {
@@ -33,7 +24,7 @@ namespace DoPF
                     {
                         UriFixer.FixInvalidUri(fs, brokenUri => FixUri(brokenUri));
                     }
-                    htmlText = ParseDOCX(fileInfo);
+                    htmlText = ParseDOCX(fileName, wordContent);
                 }
             }
             return htmlText;
@@ -42,7 +33,7 @@ namespace DoPF
             //writer.Dispose();
         }
 
-        public static Uri FixUri(string brokenUri)
+        private static Uri FixUri(string brokenUri)
         {
             string newURI = string.Empty;
             if (brokenUri.Contains("mailto:"))
@@ -58,11 +49,11 @@ namespace DoPF
             return new Uri(newURI);
         }
 
-        public static string ParseDOCX(FileInfo fileInfo)
+        private static string ParseDOCX(string fileName, byte[] wordContent)
         {
             try
             {
-                byte[] byteArray = File.ReadAllBytes(fileInfo.FullName);
+                byte[] byteArray = wordContent;
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     memoryStream.Write(byteArray, 0, byteArray.Length);
@@ -70,12 +61,12 @@ namespace DoPF
                                                 WordprocessingDocument.Open(memoryStream, true))
                     {
                         int imageCounter = 0;
-                        var pageTitle = fileInfo.FullName;
+                        var pageTitle = fileName;
                         var part = wDoc.CoreFilePropertiesPart;
                         if (part != null)
-                            pageTitle = (string)part.GetXDocument()
+                            pageTitle = (string?)part.GetXDocument()
                                                     .Descendants(DC.title)
-                                                    .FirstOrDefault() ?? fileInfo.FullName;
+                                                    .FirstOrDefault() ?? fileName;
 
                         WmlToHtmlConverterSettings settings = new WmlToHtmlConverterSettings()
                         {
@@ -89,7 +80,7 @@ namespace DoPF
                             {
                                 ++imageCounter;
                                 string extension = imageInfo.ContentType.Split('/')[1].ToLower();
-                                ImageFormat imageFormat = null;
+                                ImageFormat? imageFormat = null;
                                 if (extension == "png") imageFormat = ImageFormat.Png;
                                 else if (extension == "gif") imageFormat = ImageFormat.Gif;
                                 else if (extension == "bmp") imageFormat = ImageFormat.Bmp;
@@ -107,14 +98,14 @@ namespace DoPF
 
                                 if (imageFormat == null) return null;
 
-                                string base64 = null;
+                                string? base64 = null;
                                 try
                                 {
                                     using (MemoryStream ms = new MemoryStream())
                                     {
                                         imageInfo.Bitmap.Save(ms, imageFormat);
                                         var ba = ms.ToArray();
-                                        base64 = System.Convert.ToBase64String(ba);
+                                        base64 = Convert.ToBase64String(ba);
                                     }
                                 }
                                 catch (System.Runtime.InteropServices.ExternalException)
