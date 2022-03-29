@@ -5,7 +5,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <PackageId>DoPF</PackageId>
-    <Version>0.1.1</Version>
+    <Version>0.1.2</Version>
     <Authors>Gabriel Scarafia</Authors>
     <Company>Gabriel Scarafia</Company>
     <Product>DoPF</Product>
