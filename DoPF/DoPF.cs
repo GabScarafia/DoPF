@@ -15,7 +15,7 @@ namespace DoPF
 
     public class DoPF
     {
-        static string DocToHTML(string fileName, Byte[] wordContent )
+        public static string DocToHTML(string fileName, Byte[] wordContent )
         {
             var fileInfo = wordContent;
             string fullFilePath = fileName;
@@ -41,7 +41,7 @@ namespace DoPF
             //writer.Dispose();
         }
 
-        public static Uri FixUri(string brokenUri)
+        private static Uri FixUri(string brokenUri)
         {
             string newURI = string.Empty;
             if (brokenUri.Contains("mailto:"))
@@ -57,7 +57,7 @@ namespace DoPF
             return new Uri(newURI);
         }
 
-        public static string ParseDOCX(string fileName, byte[] wordContent)
+        private static string ParseDOCX(string fileName, byte[] wordContent)
         {
             try
             {
