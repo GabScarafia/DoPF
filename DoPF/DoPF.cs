@@ -72,7 +72,7 @@ namespace DoPF
                         var pageTitle = fileName;
                         var part = wDoc.CoreFilePropertiesPart;
                         if (part != null)
-                            pageTitle = (string)part.GetXDocument()
+                            pageTitle = (string?)part.GetXDocument()
                                                     .Descendants(DC.title)
                                                     .FirstOrDefault() ?? fileName;
 
@@ -88,7 +88,7 @@ namespace DoPF
                             {
                                 ++imageCounter;
                                 string extension = imageInfo.ContentType.Split('/')[1].ToLower();
-                                ImageFormat imageFormat = null;
+                                ImageFormat? imageFormat = null;
                                 if (extension == "png") imageFormat = ImageFormat.Png;
                                 else if (extension == "gif") imageFormat = ImageFormat.Gif;
                                 else if (extension == "bmp") imageFormat = ImageFormat.Bmp;
@@ -106,14 +106,14 @@ namespace DoPF
 
                                 if (imageFormat == null) return null;
 
-                                string base64 = null;
+                                string? base64 = null;
                                 try
                                 {
                                     using (MemoryStream ms = new MemoryStream())
                                     {
                                         imageInfo.Bitmap.Save(ms, imageFormat);
                                         var ba = ms.ToArray();
-                                        base64 = System.Convert.ToBase64String(ba);
+                                        base64 = Convert.ToBase64String(ba);
                                     }
                                 }
                                 catch (System.Runtime.InteropServices.ExternalException)
